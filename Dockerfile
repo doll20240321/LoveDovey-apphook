@@ -2,7 +2,12 @@ FROM python:3.13-slim
 
 # 安裝 Playwright 需要的系統套件
 RUN apt-get update && apt-get install -y \
-    libnss3 libatk1.0-0 libx11-xcb1 libdrm2 libgbm1 \
+    libnss3 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libx11-xcb1 \
+    libdrm2 \
+    libgbm1 \
     && rm -rf /var/lib/apt/lists/*
 
 # 安裝 Python 套件
