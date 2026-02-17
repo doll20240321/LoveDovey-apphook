@@ -1,6 +1,7 @@
 {
-  "name": "lovey-dovey-monitor",
+  "name": "lovedovey-apphook",
   "version": "1.0.0",
+  "description": "LoveyDovey Firestore → Discord webhook bridge",
   "scripts": {
     "start": "python main.py"
   }
