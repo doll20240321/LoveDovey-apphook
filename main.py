@@ -54,7 +54,7 @@ async def main():
             else:
                 print(f"跳過重複公告：{n}")
         print("等待 1 小時後再次抓取...")
-        time.sleep(3600)
+        await asyncio.sleep(3600)
 
 if __name__ == "__main__":
     asyncio.run(main())
