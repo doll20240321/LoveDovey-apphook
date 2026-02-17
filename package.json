@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "scripts": {
     "prestart": "playwright install chromium",
-    "start": "python scraper.py"
+    "start": "python main.py"
   }
 }
