@@ -1,7 +1,6 @@
 {
-  "name": "lovedovey-apphook",
+  "name": "lovedovey-scraper",
   "version": "1.0.0",
-  "description": "LoveyDovey Firestore → Discord webhook bridge",
   "scripts": {
     "start": "python main.py"
   }
