@@ -11,7 +11,7 @@ def clean_html(raw_html):
 def check_loveydovey():
     # 這裡就是你撿到的那個寶藏網址
     api_url = "https://www.loveydovey.ai/api/v1/notices?lang=zh_Hant_TW"
-    webhook_url = os.getenv('WEBHOOK_URL')
+    webhook_url = os.getenv('WEBHOOK_URL_2')
     last_id_file = "last_id_loveydovey.txt"
 
     try:
