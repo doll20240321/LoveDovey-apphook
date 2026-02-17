@@ -1,5 +1,6 @@
 def check_loveydovey():
-    api_url = "https://www.loveydovey.ai/api/v1/notices?lang=zh_Hant_TW"
+    api_url = "https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?database=projects/reelso-prod/databases/(default)&...
+"
     webhook_url = os.getenv('WEBHOOK_URL')
     
     # 偽裝成一般的 Chrome 瀏覽器，防止被防火牆擋掉
