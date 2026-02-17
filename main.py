@@ -1,56 +1,55 @@
-def check_loveydovey():
-    api_url = "https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?database=projects/reelso-prod/databases/(default)&...
-"
-    webhook_url = os.getenv('WEBHOOK_URL')
-    
-    # 偽裝成一般的 Chrome 瀏覽器，防止被防火牆擋掉
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-    }
+import os
+import requests
+import time
+from google.cloud import firestore
 
+# 從環境變數讀取 Discord webhook URL
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")
+
+# 初始化 Firestore（需要 service account JSON）
+db = firestore.Client()
+
+# 用來記錄已經推送過的公告 ID
+sent_ids = set()
+
+def send_to_discord(message: str):
+    """把訊息推送到 Discord webhook"""
+    if not WEBHOOK_URL:
+        print("WEBHOOK_URL 未設定")
+        return
+    payload = {"content": message}
     try:
-        print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] 正在檢查公告...")
-        response = requests.get(api_url, headers=headers, timeout=15)
-        
-        # 檢查 HTTP 狀態碼
-        if response.status_code != 200:
-            print(f"伺服器回報錯誤碼: {response.status_code}")
-            return
-
-        # 嘗試解析 JSON
-        try:
-            data = response.json()
-        except Exception:
-            print("抓到的內容不是 JSON 格式！內容如下：")
-            print(response.text[:200]) # 印出前 200 個字看看它是什麼
-            return
-
-        latest = data['data'][0]
-        n_id = str(latest['id'])
-        
-        # --- 底下邏輯不變 ---
-        last_id = r.get('last_notice_id')
-        if last_id:
-            last_id = last_id.decode('utf-8')
-
-        if n_id != last_id:
-            print(f"發現新公告：{latest['title']}")
-            clean_content = clean_html(latest.get('content', ''))[:300]
-            
-            payload = {
-                "username": "卿卿我我情報官",
-                "embeds": [{
-                    "title": f"📢 {latest['title']}",
-                    "description": f"{clean_content}...",
-                    "url": "https://www.loveydovey.ai/zh_Hant_TW/notices",
-                    "color": 16738740
-                }]
-            }
-            requests.post(webhook_url, json=payload)
-            r.set('last_notice_id', n_id)
-            print("ID 已同步至 Redis。")
+        r = requests.post(WEBHOOK_URL, json=payload)
+        if r.status_code == 204:
+            print("成功推送到 Discord")
         else:
-            print("目前無新公告。")
-
+            print(f"推送失敗: {r.status_code}, {r.text}")
     except Exception as e:
-        print(f"網路請求發生異常: {e}")
+        print(f"推送錯誤: {e}")
+
+def listen_announcements():
+    """監聽 Firestore 公告 collection"""
+    def on_snapshot(col_snapshot, changes, read_time):
+        for change in changes:
+            if change.type.name == "ADDED":
+                doc = change.document.to_dict()
+                doc_id = change.document.id
+                title = doc.get("title", "未命名公告")
+
+                # 去重機制：只推送一次
+                if doc_id not in sent_ids:
+                    send_to_discord(f"📢 新公告：{title}")
+                    sent_ids.add(doc_id)
+                else:
+                    print(f"跳過重複公告：{title}")
+
+    # 假設公告存在於 "announcements" collection
+    col_query = db.collection("announcements")
+    col_query.on_snapshot(on_snapshot)
+
+if __name__ == "__main__":
+    print("開始監聽公告...")
+    listen_announcements()
+    # 保持程式持續運行
+    while True:
+        time.sleep(60)
