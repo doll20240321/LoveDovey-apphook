@@ -2,6 +2,7 @@
   "name": "lovedovey-scraper",
   "version": "1.0.0",
   "scripts": {
-    "start": "python main.py"
+    "prestart": "playwright install chromium",
+    "start": "python scraper.py"
   }
 }
