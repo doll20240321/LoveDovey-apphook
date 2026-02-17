@@ -6,7 +6,7 @@ import base64
 
 # --- 設定區 ---
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')  # GitHub 的 Token
-REPO_NAME = os.getenv('doll20240321/LoveDovey-apphook')      # 格式: "你的帳號/你的專案名"
+REPO_NAME = os.getenv('REPO_NAME')      # 格式: "你的帳號/你的專案名"
 FILE_PATH = "last_id.txt"
 WEBHOOK_URL = os.getenv('WEBHOOK_URL')
 
